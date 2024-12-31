@@ -1,0 +1,24 @@
+
+.podcast-card{
+    overflow: hidden;
+    cursor: pointer;
+    padding: 10px;
+    background-color:rgb(40, 40, 66);
+    border-radius: 10px;
+    opacity: 0.7;
+    transition: opacity 300ms;
+    height: 250px;
+}
+.podcast-card img{
+    width: 100%;
+    height: 85%;
+    border-radius: inherit;
+    object-fit: cover;
+}
+.podcast-card:hover{
+    opacity: 1;
+}
+.podcast-card p{
+    margin-top: 10px;
+    text-align: center;
+}

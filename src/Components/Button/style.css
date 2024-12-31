@@ -1,0 +1,22 @@
+.custom-btn{
+  display: flex;
+  justify-content: center;
+    width: 70%;
+    background-color: var(--theme);
+    border: 2px solid var(--bluegrey);
+    font-size: 1.2em;
+    padding: 8px 12px;
+   border-radius: 5px;
+   color: var(--white);
+   transition: scale 300ms, background-color 300ms;
+  }
+  .custom-btn:hover{
+    cursor: pointer;
+    background-color: var(--blue);
+    color: var(--theme);
+    scale: .98;
+  }
+  .loader{
+    
+    color: white !important ;
+  }
