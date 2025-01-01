@@ -42,6 +42,8 @@ const ButtonComponent = ({text,name,email,password,confirmPass}) => {
           const userCredential = await createUserWithEmailAndPassword(
               auth,email,password
           )
+          console.log(userCredential);
+          
           const user = userCredential.user;
           const userImgUrl = await fetchAvatar(name);
           

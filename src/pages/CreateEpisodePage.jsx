@@ -3,8 +3,8 @@ import Header from '../Components/Header'
 import InputComponent from '../Components/Input';
 import FileInput from '../Components/Input/FileInput';
 import { toast } from 'react-toastify';
-import {ref, uploadBytes,getDownloadURL} from 'firebase/storage'
-import {auth,db,storage} from '../Firebase'
+import {auth,db} from '../Firebase'
+import cld from '../config';
 import { addDoc, collection } from 'firebase/firestore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Bars } from 'react-loader-spinner';
@@ -24,9 +24,17 @@ const CreateEpisodePage = () => {
        }
        else{
         try{
-        const audioRef = ref(storage,`podcast-episodes/${auth.currentUser.uid}/${Date.now}`)
-        await uploadBytes(audioRef,audioFile);
-        const audioUrl = await getDownloadURL(audioRef);
+        const formData = new FormData()
+        formData.append('file', audioFile)
+        formData.append('upload_preset', 'ml_default')
+        formData.append('folder', `podcast-episodes/${auth.currentUser.uid}/${Date.now()}`);
+        const audioRes = await fetch( `https://api.cloudinary.com/v1_1/${cld.cloudinaryConfig.cloud_name}/auto/upload`,
+          {
+            method: 'POST',
+            body: formData
+          })
+        const audioData = await audioRes.json()
+        const audioUrl = audioData.secure_url;
         const episodeData = {
             title, description,audioFile : audioUrl
         }

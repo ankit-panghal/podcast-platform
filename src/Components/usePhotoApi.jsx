@@ -1,11 +1,11 @@
 
 import axios from 'axios';
-import { useState } from 'react';
-
 import { Buffer } from 'buffer';
+
 const usePhotoApi = () => {
 
-const fetchAvatar = async function (username){
+const fetchAvatar = async function (username){ 
+   
   const response = await axios(`https://api.multiavatar.com/${username?username:'Binx Bond'}.png`,{
     responseType:'arraybuffer'
   });

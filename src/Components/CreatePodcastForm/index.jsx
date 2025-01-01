@@ -2,16 +2,18 @@ import React, { useState } from 'react'
 import InputComponent from '../Input'
 import FileInput from '../Input/FileInput';
 import { toast } from 'react-toastify';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { auth, db, storage } from '../../Firebase';
+import { auth, db } from '../../Firebase';
 import { addDoc, setDoc,doc,collection} from 'firebase/firestore';
+import cld from '../../config';
 import { Bars } from 'react-loader-spinner';
 import { useDispatch } from 'react-redux';
 import { setCurrPodcast } from '../../redux/Slices/currentPodcastSlice';
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
+
 const CreatePodcastForm = () => {
   const data = useSelector(state => state.currentPodcast);
+  
     const [title,setTitle] = useState(data?.title ? data.title :'');
     const [description,setDescription] = useState(data?.description ? data.description : '');
     const [displayImg,setDisplayImg] = useState(null);
@@ -21,6 +23,7 @@ const CreatePodcastForm = () => {
 
     const dispatch = useDispatch();
    const navigate = useNavigate();
+
    async function handleSubmission(){
     setLoading(true)
         if(!title || !description || !displayImg || !bannerImg ){
@@ -33,13 +36,35 @@ const CreatePodcastForm = () => {
         }
         else {
             try{
-            const bannerImgRef = ref(storage,`podcasts/${auth.currentUser.uid}/${Date.now()}`)
-            await uploadBytes(bannerImgRef,bannerImg);
-              const bannerImgUrl = await getDownloadURL(bannerImgRef);
-          
-              const displayImgRef = ref(storage,`podcasts/${auth.currentUser.uid}/${Date.now()}`)
-              await uploadBytes(displayImgRef,displayImg);
-             const displayImgUrl = await getDownloadURL(displayImgRef);
+            const formData = new FormData()
+            formData.append('file', bannerImg)
+            formData.append('upload_preset', 'ml_default')
+            formData.append('folder', `podcasts/${auth.currentUser.uid}/${Date.now()}`);
+            const bannerRes = await fetch(
+              `https://api.cloudinary.com/v1_1/${cld.cloudinaryConfig.cloud_name}/image/upload`,
+              {
+                method: 'POST',
+                body: formData
+              }
+            )
+            const bannerData = await bannerRes.json()
+            const bannerImgUrl = bannerData.secure_url
+            formData.delete('file'); // Clear the form data for the next image upload
+            formData.append('file', displayImg);
+            formData.append('upload_preset', 'ml_default')
+            formData.append('folder', `podcasts/${auth.currentUser.uid}/${Date.now()}`);
+        
+            const displayRes = await fetch(
+              `https://api.cloudinary.com/v1_1/${cld.cloudinaryConfig.cloud_name}/image/upload`,
+              {
+                method: 'POST',
+                body: formData,
+              }
+            );
+            const displayData = await displayRes.json();
+            const displayImgUrl = displayData.secure_url;
+            
+
             const podcastData = {
               title,
               description,
@@ -61,13 +86,13 @@ const CreatePodcastForm = () => {
             }
             else {
               await addDoc(collection(db,'podcasts'),podcastData)
-            setTitle('');
-            setDescription('');
-            setBannerImg(null);
-            setDisplayImg(null);
-            setLoading(false)
-            setIsCreated(true);
-            toast.success('Podcast Created Successfully')
+                    setTitle('');
+                    setDescription('');
+                    setBannerImg(null);
+                    setDisplayImg(null);
+                    setLoading(false)
+                    setIsCreated(true);
+                    toast.success('Podcast Created Successfully')
           }
         }
               catch(error){
@@ -88,7 +113,7 @@ const CreatePodcastForm = () => {
       data && <button className='custom-btn' onClick={handleSubmission}>
         {loading ? <Bars color='white' height='24'/> : 'Edit Podcast'}</button>
       }
-      <button style={data ? {display : 'none'} : {display :'unset'}}               className='custom-btn' onClick={handleSubmission}>
+      <button style={data ? {display : 'none'} : {display :'flex'}} className='custom-btn' onClick={handleSubmission}>
         {loading ? <Bars color='white' height='24'/> : 'Create Podcast'}
         </button>
     </form>

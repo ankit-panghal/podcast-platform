@@ -55,21 +55,30 @@ form p{
 }
 /* podcasts page */
 .podcasts-container{
-  width: 100%;
   margin-top: 25px;
   padding: 2rem;
-   display: grid;
-   grid-template-columns: repeat(3,1fr);
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
   gap: 30px;
 }
+.podcast-card{
+  min-width: 350px;
+  min-height: 350px;
+}
 
-@media (max-width : 768px) {
+@media (max-width : 1068px) {
+  .podcasts-container{
+    grid-template-columns: repeat(3,1fr);
+  }
+}
+
+@media (max-width : 868px) {
   .podcasts-container{
     grid-template-columns: repeat(2,1fr);
   }
 }
 
-@media (max-width : 450px) {
+@media (max-width : 550px) {
   .podcasts-container{
     grid-template-columns: auto;
   }
@@ -91,7 +100,7 @@ form p{
   padding: 5px;
   background-color: rgb(43, 43, 78);
   border-radius: 10px;
-  height: 40vh;
+  height: 45vh;
 }
 .podcast-details img{
 width: 100%;
@@ -121,6 +130,7 @@ border-radius: inherit;
 }
 .profile-pic > img{
   width: 10%;
+  border-radius: 50%;
 }
 #user-img-uploader{
 display: none;

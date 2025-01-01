@@ -6,15 +6,13 @@ import { db } from '../Firebase';
 import { setPodcast } from '../redux/Slices/podcastSlice';
 import PodcastCard from '../Components/Podcast/PodcastCard';
 import InputComponent from '../Components/Input'
-import Skeleton from 'react-loading-skeleton'
-import 'react-loading-skeleton/dist/skeleton.css'
 
 const PodcastsPage = () => {
     const podcasts = useSelector(state => state.podcasts.podcasts);
     const dispatch = useDispatch();
      const [search,setSearch] = useState('');
     useEffect(() => {
-       const unsubscribe = onSnapshot(
+        onSnapshot(
         query(collection(db,'podcasts')),
         (querySnapshot) => {
              const podcastsData = [];

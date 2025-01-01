@@ -20,7 +20,6 @@ const ProfilePage = () => {
  const [userImg,setUserImg] = useState(null)
 
  const auth = getAuth();
- 
  useEffect(() => {
   async function getData(){
   const user = auth.currentUser;
@@ -38,7 +37,7 @@ getData();
  },[])
 
 useEffect(() => {
-  const unsubscribe = onSnapshot(
+  onSnapshot(
     query(collection(db,'podcasts')),
     (querySnapshot) => {
          const podcastsData = [];
@@ -70,7 +69,6 @@ if(!user) return <><Header/></>
   function handleLogOut(){
     signOut(auth).then(() => {
       toast.success('User logged out successfully')
-
     })
     .then(() => {
       dispatch(removeUser())
