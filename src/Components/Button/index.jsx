@@ -63,7 +63,7 @@ const ButtonComponent = ({text,name,email,password,confirmPass}) => {
               profileImageUrl : userImgUrl
             }
           ))
-          navigate('/profile');
+          navigate('/podcasts');
        }
        catch(error){
           toast.error(error.message)
@@ -92,7 +92,7 @@ const ButtonComponent = ({text,name,email,password,confirmPass}) => {
              profileImageUrl : userImgUrl
            }
          ))
-          navigate('/profile');
+          navigate('/podcasts');
       }
       catch(error){
          console.log('error')
