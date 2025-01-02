@@ -82,7 +82,6 @@ const ButtonComponent = ({text,name,email,password,confirmPass}) => {
           const userData = userDoc.data();
           const userImgUrl = await fetchAvatar(name);
           setLoading(false)
-          // console.log(userData)
           toast.success('User logged In successfully')
           
          dispatch(setUser({

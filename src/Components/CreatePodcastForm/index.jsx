@@ -13,11 +13,14 @@ import { useNavigate } from 'react-router-dom';
 
 const CreatePodcastForm = () => {
   const data = useSelector(state => state.currentPodcast);
+  console.log(data);
   
+   const path = window.location.pathname.split('/')[1];
+   
     const [title,setTitle] = useState(data?.title ? data.title :'');
     const [description,setDescription] = useState(data?.description ? data.description : '');
-    const [displayImg,setDisplayImg] = useState(null);
-    const [bannerImg,setBannerImg] = useState(null);
+    const [displayImg,setDisplayImg] = useState(data?.displayImage ? data.displayImage : null);
+    const [bannerImg,setBannerImg] = useState(data?.bannerImage ? data.bannerImage : null);
     const [loading,setLoading] = useState(false);
     const [isCreated,setIsCreated] = useState(false);
 
@@ -104,18 +107,18 @@ const CreatePodcastForm = () => {
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
-      <h1>{data ? 'Edit Podcast' : 'Create Podcast'}</h1>
+      <h1>{path === 'edit-podcast' ? 'Edit Podcast' : 'Create Podcast'}</h1>
       <InputComponent type='text' placeholder='Podcast Title' value={title} setValue={setTitle}/>
       <InputComponent type='text'placeholder='Podcast Description' value={description} setValue={setDescription}/>
-      <FileInput text='Import Banner Image' accept='images/*' id='banner-img' handleFile={setBannerImg} isCreated={isCreated} />
-      <FileInput text='Import Display Image' accept='images/*' id='display-img' handleFile={setDisplayImg} isCreated={isCreated}/>
+      <FileInput text='Import Banner Image' accept='images/*' id='banner-img' value={bannerImg} handleFile={setBannerImg} isCreated={isCreated} />
+      <FileInput text='Import Display Image' accept='images/*' id='display-img' value={displayImg} handleFile={setDisplayImg} isCreated={isCreated}/>
       {
-      data && <button className='custom-btn' onClick={handleSubmission}>
+      path === 'edit-podcast' ? <button className='custom-btn' onClick={handleSubmission}>
         {loading ? <Bars color='white' height='24'/> : 'Edit Podcast'}</button>
-      }
+      :
       <button style={data ? {display : 'none'} : {display :'flex'}} className='custom-btn' onClick={handleSubmission}>
         {loading ? <Bars color='white' height='24'/> : 'Create Podcast'}
-        </button>
+        </button>}
     </form>
   )
 }

@@ -62,7 +62,6 @@ form p{
   gap: 30px;
 }
 .podcast-card{
-  min-width: 350px;
   min-height: 350px;
 }
 
@@ -144,12 +143,7 @@ display: none;
 .user-details > p{
   cursor: pointer;
 }
-.podcasts-container.user-podcasts{
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: -20px;
-}
+
 .out-btns{
   display: flex;
   justify-content: center;
