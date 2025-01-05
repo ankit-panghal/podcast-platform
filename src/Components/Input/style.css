@@ -1,4 +1,7 @@
 .custom-input{
+  display: flex;
+  align-items: center;
+  gap: 20px;
     width: 70%;
     background-color: var(--theme);
     border: 2px solid var(--bluegrey);
@@ -19,4 +22,9 @@
   }
   .label-input{
     color: var(--bluegrey);
+  }
+  .custom-input img{
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
   }

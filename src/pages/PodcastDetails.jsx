@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../Components/Header'
 import { useNavigate, useParams } from 'react-router-dom'
-import { collection, doc, getDoc, onSnapshot, query } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, onSnapshot, query } from 'firebase/firestore';
 import { db } from '../Firebase';
 import EpisodeDetails from '../Components/EpisodeDetails';
 import AudioPlayer from '../Components/AudioPlayer';
@@ -14,52 +14,53 @@ const PodcastDetails = () => {
     const [podcast,setPodcast] = useState({});
     const [episodes,setEpisodes] = useState([]);
     const [audioFile,setAudioFile] = useState('');
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const auth = getAuth();
+
     useEffect(() => {
-        if(id){
+        
+            async function getData(){
+                try{
+                    const docRef = doc(db,'podcasts',id);
+                    const docSnap = await getDoc(docRef);
+                    if(docSnap.exists()){
+                        setPodcast({id,...docSnap.data()})
+                    }
+                    else{
+                        navigate('/podcasts');
+                    }
+                }
+                catch(error){
+                    console.log(error.message)
+                }
+            }
             getData();
-        }
+             
+            async function getEpisodes(){
+                try{
+                    const q = query(collection(db,'podcasts',id,'episodes')); 
+                    const querySnapshot = await getDocs(q)
+                    const episodeData = [];
+                    querySnapshot.forEach((doc) => {
+                        episodeData.push({id : doc.id,...doc.data()})
+                    })
+                            setEpisodes(episodeData)
+                }
+                catch(error){
+                    console.log(error.message)
+                }
+            }
+          getEpisodes();
     },[id])
-    async function getData(){
-        try{
-        const docRef = doc(db,'podcasts',id);
-        const docSnap = await getDoc(docRef);
-        if(docSnap.exists()){
-            setPodcast({id,...docSnap.data()})
-        }
-        else{
-            navigate('/podcasts');
-        }
-    }
-    catch(error){
-        console.log(error.message)
-    }
-}
-useEffect(() => {
-    const unsubscribe = onSnapshot(
-        query(collection(db,'podcasts',id,'episodes')),
-        (querySnapshot) => {
-            const episodeData = [];
-            querySnapshot.forEach((doc) => {
-                episodeData.push({id : doc.id,...doc.data()})
-            })
-            setEpisodes(episodeData)
-        },
-        (error) => {
-            console.log(error.message)
-        }
-    )
-    return () => unsubscribe()
-},[id])
 
-function handleEdit(){
+function handleEditPodcast(){
     dispatch(setCurrPodcast(podcast))
-    navigate('/edit-podcast')
+    navigate(`/podcast/${id}/edit-podcast`)
 }
 
-function handleCreation(){
+function handleEpisodeCreation (){
     navigate(`/podcast/${id}/create-episode`)
 }
   return (
@@ -70,8 +71,8 @@ function handleCreation(){
             <div className='title-bar'>
             <h1>{podcast.title}</h1>
             <div style={{display: 'flex',gap : '10px'}}>
-            {podcast.createdBy === auth.currentUser.uid ?<button onClick= {handleEdit}className='custom-btn'>Edit Podcast</button> : ''}
-           {podcast.createdBy === auth.currentUser.uid ? <button className='custom-btn' onClick={handleCreation}>Create Episode</button> : '' }
+            {podcast.createdBy === auth.currentUser.uid ?<button onClick= {handleEditPodcast}className='custom-btn'>Edit Podcast</button> : ''}
+           {podcast.createdBy === auth.currentUser.uid ? <button className='custom-btn' onClick={handleEpisodeCreation}>Create Episode</button> : '' }
            </div>
             </div>
             <div className='banner-bg'>

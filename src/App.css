@@ -110,7 +110,7 @@ border-radius: inherit;
 .podcast-details .custom-btn{
   width: 170px;
 }
-@media (max-width : 650px) {
+@media (max-width : 950px) {
   .podcast-details > .title-bar{
     flex-direction: column !important;
     align-items: center;
@@ -136,12 +136,15 @@ display: none;
 }
 .user-details{
   display : flex;
-  flex-direction : column;
-  align-items : center;
-  gap : 20px
+ justify-content : center;
+ align-items: center;
+  gap : 20px;
 }
-.user-details > p{
-  cursor: pointer;
+.custom-btn.verify-mail{
+  display: block;
+  margin:20px auto;
+  width: max-content;
+
 }
 
 .out-btns{

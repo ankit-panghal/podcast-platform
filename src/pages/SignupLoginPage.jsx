@@ -1,15 +1,27 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../Components/Header'
 import SignupForm from '../Components/SignupForm';
 import LoginForm from '../Components/LoginForm';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-const SignupPage = () => {
+import { getAuth,onAuthStateChanged } from 'firebase/auth';
+const SignupLoginPage = () => {
   const [clicked,setClicked] = useState(false);
-  const user = useSelector(state => state.user.user);
-  console.log(user)
   const navigate = useNavigate();
-   if(user) navigate('/profile')
+   const auth = getAuth();
+
+  useEffect(() => {
+    //Checks if user is already logged in
+    const unsubscribe = onAuthStateChanged(auth,(user) => {
+      if(user){
+        navigate('/podcasts')
+      }
+    })
+    return () => unsubscribe()
+  },[])
+    
+   
+ 
+    
    
   return (
     <div>
@@ -24,4 +36,4 @@ const SignupPage = () => {
   )
 }
 
-export default SignupPage
+export default SignupLoginPage

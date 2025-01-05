@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
 import './style.css'
+import React, { useEffect, useRef, useState } from 'react'
 import {FaPlay,FaPause,FaVolumeUp,FaVolumeMute} from 'react-icons/fa'
 import back10secs from '../../assets/back10secs.png'
 import next10secs from '../../assets/next10secs.png'
@@ -11,7 +11,7 @@ const AudioPlayer = ({audioSrc,image}) => {
     const [isMute,setIsMute] = useState(false);
     const [currentTime,setCurrentTime] = useState(0);
 
-      const audioRef = useRef(); 
+    const audioRef = useRef(); 
 
    useEffect(() => {
        if(isPlaying) audioRef.current.play();
@@ -41,6 +41,7 @@ useEffect(() => {
   }, []);
 
     function handleTimeUpdate(){
+      // console.log(audioRef.current.currentTime) 
         setCurrentTime(audioRef.current.currentTime);
         setDuration(audioRef.current.duration);
     }
@@ -57,12 +58,6 @@ useEffect(() => {
     }
 
     function handleVolume(e){
-      e.target.style.opacity = 1;
-
-        setTimeout(() => {
-          e.target.style.opacity = 0.4;
-        }, 1000);
-        
         setVolume(e.target.value)
         audioRef.current.volume = e.target.value;
     }
@@ -96,13 +91,14 @@ useEffect(() => {
          audioRef.current.currentTime = duration;
       };
     }
+
   return (
     <div className='custom-audio-player'>
       <img src={image} alt='episode-img'/>
       <audio src={audioSrc} ref={audioRef}></audio>
       <span onClick={() => setIsPlaying(prev => !prev)}>{isPlaying ? <FaPause/> : <FaPlay/>}</span>
       <div className='duration-box'>
-        
+  
         <span>{formatTime(currentTime)}</span>
         <input type='range' value={currentTime} max={duration} min='0' onChange={handleSeek}/>
         <span>{formatTime(duration)}</span>

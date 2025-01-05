@@ -12,10 +12,10 @@ const SignupForm = () => {
   return (
     <>
        <InputComponent type='text' placeholder= 'Full Name' value={fullName} setValue={setFullName}/>
-      <InputComponent type='email' placeholder='Email' value={email} setValue={setEmail}/>
-      <InputComponent type='password' placeholder='Password' value={password} setValue={setPassword}/>
-      <InputComponent type='password' placeholder='Confirm Password' value={confirmPass} setValue={setConfirmPass}/>
-      <ButtonComponent text='Signup' name={fullName} email={email} password={password} confirmPass={confirmPass} />
+       <InputComponent type='email' placeholder='Email' value={email} setValue={setEmail}/>
+       <InputComponent type='password' placeholder='Password' value={password} setValue={setPassword}/>
+       <InputComponent type='password' placeholder='Confirm Password' value={confirmPass} setValue={setConfirmPass}/>
+       <ButtonComponent text='Signup' name={fullName} email={email} password={password} confirmPass={confirmPass} />
       
     </>
   )

@@ -1,69 +1,77 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Header from '../Components/Header'
-import { getAuth, deleteUser,sendPasswordResetEmail,signOut } from 'firebase/auth'
+import { getAuth, deleteUser,updateEmail,signOut, sendEmailVerification } from 'firebase/auth'
 import { toast } from 'react-toastify'
 import InputComponent from '../Components/Input'
 import { useDispatch } from 'react-redux'
-import { removeUser } from '../redux/Slices/userSlice'
+import { removeUser, setUser } from '../redux/Slices/userSlice'
 import PodcastCard from '../Components/Podcast/PodcastCard'
 import {db} from '../Firebase'
-import {doc,getDoc, collection, onSnapshot, query} from 'firebase/firestore'
+import {doc,getDoc, collection, getDocs, query} from 'firebase/firestore'
 import { updatePodcasts } from '../redux/Slices/userPodcastsSlice'
+import{ MdVerified } from 'react-icons/md'
 
 
 const ProfilePage = () => {
   const user = useSelector(state => state.user.user)
   const userPodcasts = useSelector(state => state.userPodcasts)
-  const dispatch = useDispatch();
- const [email,setEmail] = useState(user?.email);
- const [userImg,setUserImg] = useState(null)
-
- const auth = getAuth();
- useEffect(() => {
-  async function getData(){
-  const user = auth.currentUser;
-  const docRef = doc(db, "users", user.uid);
-  const docSnap = await getDoc(docRef);
+  const [userImg,setUserImg] = useState(user?.profileImageUrl ? user.profileImageUrl : '')
+  const [email,setEmail] = useState(user?.email ? user.email : '')
+  console.log(userPodcasts);
   
-  if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
-    setUserImg(docSnap.data().profileImageUrl)
-  } else {
-    console.log("No such document found!");
-  }
-}
-getData();
- },[])
+  const dispatch = useDispatch();
+ const auth = getAuth();
+ const currentUser = auth.currentUser;
 
-useEffect(() => {
-  onSnapshot(
-    query(collection(db,'podcasts')),
-    (querySnapshot) => {
-         const podcastsData = [];
-      querySnapshot.forEach((doc) => {
-        console.log(doc.data())
-     if(doc.data().createdBy === auth.currentUser.uid){
-           podcastsData.push({id : doc.id,...doc.data()})
-     }
-    })
-   dispatch(updatePodcasts([...podcastsData]))
-    console.log('user podcasts : ' ,podcastsData)
+ useEffect(() => {
+  if(currentUser){
+
+    if(user) {
+      setEmail(user.email)
+      return;
     }
-   )
+    async function getData(){
+      
+      const docRef = doc(db, "users", currentUser.uid);
+      const docSnap = await getDoc(docRef);
+    
+      if (docSnap.exists()) {
+      dispatch(setUser(docSnap.data()))
+      // console.log("Document data:", docSnap.data());
+      setUserImg(docSnap.data().profileImageUrl)
+      } else {
+      console.log("No such document found!");
+      }
+     }
+     getData();
+  }
+ },[user])
+
+useEffect( () => {
+  (async function() {
+    const q  = query(collection(db,'podcasts'));
+    const querySnapshot = await getDocs(q)
+    const podcastsData = [];
+    querySnapshot.forEach((doc) => {
+      if(doc.data().createdBy === auth.currentUser.uid){
+        podcastsData.push({id : doc.id,...doc.data()})
+      }
+    })   
+      dispatch(updatePodcasts(podcastsData))
+        // console.log('user podcasts : ' ,podcastsData)
+  })()
 },[])
 
-if(!user) return <><Header/></>
-   
 
-    function handlePassword(){
-        sendPasswordResetEmail(auth, email)
-    .then(() => {
-      toast.success('Password reset email sent')
-    })
-    .catch((error) => {
-      console.log(error.message) ;
-    }); 
+    if(!currentUser) return <><Header/></>
+
+    function verifyEmail(){
+       sendEmailVerification(auth.currentUser).then(() => {
+          toast.info('Email verification link sent to your email')
+        }).catch((error) => {
+          toast.error(error.message)
+          })
     }
 
   function handleLogOut(){
@@ -79,13 +87,10 @@ if(!user) return <><Header/></>
 
   }
   function handleDeletion(){
-
-    const user = auth.currentUser;
-    deleteUser(user).then(() => {
-     toast.success('Account deleted successfully')
-    })
+    deleteUser(currentUser)
     .then(() => {
-      dispatch(removeUser())
+     toast.success('Account deleted successfully')
+     dispatch(removeUser())
     })
     .catch((error) => {
       toast.error(error.message)
@@ -103,15 +108,18 @@ if(!user) return <><Header/></>
         <img src={userImg} alt='user-avatar'/>
       </div>
       <div className='user-details'>
-      <InputComponent type={'email'} value={email} placeholder={'Email'} setValue={setEmail} readOnly={true}/>
-
-      <p onClick={handlePassword}>Forgot Password/Change Password ?</p>
+      <InputComponent type={'email'} placeholder={'Email'} readOnly={true} value={email}  setValue={setEmail} />
+      {currentUser.emailVerified && <MdVerified style={{color : 'green',fontSize : '1.5rem'}}/>}
       </div>
+      {
+      !currentUser.emailVerified && <button className='custom-btn verify-mail' onClick={verifyEmail}>Verify Email</button>
+      }
+      
       <h1 className='heading' style={{marginTop : '40px'}}>Your Podcasts</h1>
       
       {userPodcasts.length > 0 && <div className='podcasts-container user-podcasts'>
         {userPodcasts.map(item => {
-          return <PodcastCard id={item.id} title={item.title} displayImg={item.displayImage}/>
+          return <PodcastCard key={item.id} id={item.id} title={item.title} displayImg={item.displayImage}/>
         })}
         </div>}
       <div className='out-btns'>
