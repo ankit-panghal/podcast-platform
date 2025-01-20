@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../Components/Header'
 import { useDispatch, useSelector } from 'react-redux'
-import { collection, getDocs, onSnapshot, query } from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../Firebase';
 import { setPodcast } from '../redux/Slices/podcastSlice';
 import PodcastCard from '../Components/Podcast/PodcastCard';

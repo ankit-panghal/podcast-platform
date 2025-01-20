@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Header from '../Components/Header'
-import { getAuth, deleteUser,updateEmail,signOut, sendEmailVerification } from 'firebase/auth'
+import { getAuth, deleteUser,signOut, sendEmailVerification } from 'firebase/auth'
 import { toast } from 'react-toastify'
 import InputComponent from '../Components/Input'
 import { useDispatch } from 'react-redux'
@@ -23,22 +23,18 @@ const ProfilePage = () => {
   const dispatch = useDispatch();
  const auth = getAuth();
  const currentUser = auth.currentUser;
-
+   
  useEffect(() => {
   if(currentUser){
-
-    if(user) {
-      setEmail(user.email)
+      setEmail(currentUser.email)
       return;
-    }
     async function getData(){
-      
       const docRef = doc(db, "users", currentUser.uid);
       const docSnap = await getDoc(docRef);
     
       if (docSnap.exists()) {
       dispatch(setUser(docSnap.data()))
-      // console.log("Document data:", docSnap.data());
+      console.log("Document data:", docSnap.data());
       setUserImg(docSnap.data().profileImageUrl)
       } else {
       console.log("No such document found!");
@@ -46,7 +42,7 @@ const ProfilePage = () => {
      }
      getData();
   }
- },[user])
+ },[currentUser])
 
 useEffect( () => {
   (async function() {
@@ -59,7 +55,6 @@ useEffect( () => {
       }
     })   
       dispatch(updatePodcasts(podcastsData))
-        // console.log('user podcasts : ' ,podcastsData)
   })()
 },[])
 
@@ -67,7 +62,7 @@ useEffect( () => {
     if(!currentUser) return <><Header/></>
 
     function verifyEmail(){
-       sendEmailVerification(auth.currentUser).then(() => {
+       sendEmailVerification(currentUser).then(() => {
           toast.info('Email verification link sent to your email')
         }).catch((error) => {
           toast.error(error.message)

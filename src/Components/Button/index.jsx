@@ -47,18 +47,19 @@ const ButtonComponent = ({text,name,email,password,confirmPass}) => {
           const userImgUrl = `https://api.multiavatar.com/${name ? name:'Binx Bond'}.png`;
 
           const data = {
-            name : user.name,
+            name ,
             email : user.email,
             uid : user.uid,
             profileImageUrl : userImgUrl
           }
+          console.log('data',data);
+          
           //Add Data to firestore
           await setDoc(doc(db,'users',user.uid),data)
-          dispatch(setUser(data))
-
-          setLoading(false);
           toast.success('User created successfully')
-          navigate('/podcasts');
+          dispatch(setUser(data))
+          setLoading(false);
+          // navigate('/podcasts');
        }
        catch(error){
           toast.error(error.message)
