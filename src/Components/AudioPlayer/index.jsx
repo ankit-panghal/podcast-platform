@@ -13,11 +13,6 @@ const AudioPlayer = ({audioSrc,image}) => {
 
     const audioRef = useRef(); 
 
-   useEffect(() => {
-       if(isPlaying) audioRef.current.play();
-       else audioRef.current.pause();
-   },[isPlaying])
-
 useEffect(() => {
     if(!isMute){ 
         audioRef.current.volume = 1;
@@ -30,28 +25,34 @@ useEffect(() => {
 },[isMute])
       
 useEffect(() => {
+  if(isPlaying) audioRef.current.play();
+  else audioRef.current.pause();
     const audio = audioRef.current;
+
+    function handleMetaData(){
+      setDuration(audio.duration)
+    }
+      function handleTimeUpdate(){
+          setCurrentTime(audio.currentTime);
+      }
+      
+      function handleTimeEnded(){
+        setIsPlaying(false)
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    audio.addEventListener("loadedmetadata", handleMetaData)
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener('ended',handleTimeEnded);
-
+  
     return () => {
+      audio.removeEventListener("loadmetadata", handleMetaData)
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener('ended',handleTimeEnded);
     };
-  }, []);
+  }, [audioSrc,isPlaying]);
 
-    function handleTimeUpdate(){
-      // console.log(audioRef.current.currentTime) 
-        setCurrentTime(audioRef.current.currentTime);
-        setDuration(audioRef.current.duration);
-    }
-    
-    function handleTimeEnded(){
-      setIsPlaying(false)
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-
+  
     function handleSeek(e){
         setCurrentTime(e.target.value);
        audioRef.current.currentTime = e.target.value;
@@ -94,6 +95,7 @@ useEffect(() => {
 
   return (
     <div className='custom-audio-player'>
+      <div style={{width : '60%',display : 'inherit',gap : '20px'}}>
       <img src={image} alt='episode-img'/>
       <audio src={audioSrc} ref={audioRef}></audio>
       <span onClick={() => setIsPlaying(prev => !prev)}>{isPlaying ? <FaPause/> : <FaPlay/>}</span>
@@ -106,9 +108,12 @@ useEffect(() => {
         <span onClick={handleForward}><img src={next10secs} alt='next10secs'/></span>
 
       </div>
+      </div>
+      <div>
       <div className='vol-box'>
       <span onClick={() => setIsMute(prev => !prev)}>{isMute ? <FaVolumeMute/> : <FaVolumeUp/>}</span>
       <input type='range' value={volume} min={0} max={1} step={0.01} onChange={handleVolume} className='vol-range'/>
+      </div>
       </div>
     </div>
   )

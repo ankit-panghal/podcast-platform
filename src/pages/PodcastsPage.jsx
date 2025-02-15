@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Header from '../Components/Header'
 import { useDispatch, useSelector } from 'react-redux'
 import { collection, getDocs, query } from 'firebase/firestore';
@@ -6,6 +6,7 @@ import { db } from '../Firebase';
 import { setPodcast } from '../redux/Slices/podcastSlice';
 import PodcastCard from '../Components/Podcast/PodcastCard';
 import InputComponent from '../Components/Input'
+import Skeleton from 'react-loading-skeleton'
 
 const PodcastsPage = () => {
     const podcasts = useSelector(state => state.podcasts.podcasts);
@@ -26,7 +27,7 @@ const PodcastsPage = () => {
     },[])
 
     const searchTerm = search.trim().toLowerCase();
-    const filteredData = podcasts.filter(item => item.title.toLowerCase().includes(searchTerm));
+    const filteredData = useMemo(() => podcasts.filter(item => item.title.toLowerCase().includes(searchTerm)),[podcasts,searchTerm]);
 
   return (
     <div>
@@ -37,6 +38,14 @@ const PodcastsPage = () => {
       </form>
       
       {
+        podcasts.length === 0 ? <div className='podcasts-container'>
+        {
+          new Array(8).fill('').map((_,idx) => {
+            return <Skeleton key={idx} height={'250px'} baseColor='rgb(40, 40, 66)'/>
+          })  
+        }
+        </div>
+        :
       filteredData.length > 0 ? <div className='podcasts-container'>
          { 
             filteredData.map(item => {
@@ -44,12 +53,9 @@ const PodcastsPage = () => {
             }) 
           } 
       </div> 
-         : 
-      <p style={{textAlign : 'center', marginTop :'30px'}}>
-        { search ? 'Podcasts not found' : 'No current podcast on the platform'}</p>
-     
-      }
-      
+      : <p style={{textAlign : 'center', marginTop :'30px'}}>
+        { search ? 'Podcasts not found' : 'No current podcast on the platform'}</p>    
+      }  
     </div>
   )
 }

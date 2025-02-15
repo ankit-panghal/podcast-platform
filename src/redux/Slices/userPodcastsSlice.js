@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = [];
+const initialState = null;
 
 const userPodcastsSlice = createSlice({
     name : 'userPodcasts',
     initialState,
     reducers : {
         updatePodcasts(state,action){
-         return state = [...action.payload]
+         return state = action.payload
         }
     }
 })

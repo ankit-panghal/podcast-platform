@@ -13,7 +13,7 @@ const PrivateRoutes = () => {
                         <Bars color='white' height='40'  />
                         </div>
                        </> 
-    else if(!user || error) return <Navigate to='/'/>
+    else if(!user || error || !user?.emailVerified) return <Navigate to='/'/>
     else return <Outlet/> //component used to render child routes of a parent route.
   
 }

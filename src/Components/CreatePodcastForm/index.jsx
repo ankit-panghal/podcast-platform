@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import InputComponent from '../Input'
 import FileInput from '../Input/FileInput';
 import { toast } from 'react-toastify';
@@ -10,28 +10,36 @@ import { useDispatch } from 'react-redux';
 import { setCurrPodcast } from '../../redux/Slices/currentPodcastSlice';
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom';
+import InputRef from '../Input/InputRef';
 
 const CreatePodcastForm = () => {
   const {id} = useParams()
   const data = useSelector(state => state.currentPodcast);
-  const [title,setTitle] = useState(data?.title ? data.title :'');
-  const [description,setDescription] = useState(data?.description ? data.description : '');
+  const titleRef = useRef('')
+  const descriptionRef = useRef('')
   const [displayImg,setDisplayImg] = useState(data?.displayImage ? data.displayImage : null);
   const [bannerImg,setBannerImg] = useState(data?.bannerImage ? data.bannerImage : null);
   const [loading,setLoading] = useState(false);
   
   const path = window.location.pathname.split('/')[3];
-   
     const dispatch = useDispatch();
    const navigate = useNavigate();
+
+useEffect(() => {
+    if(data){
+        titleRef.current.value = data.title
+         descriptionRef.current.value = data.description
+    }
+},[data])
 
    useEffect(() => {
       if(path === 'edit-podcast' && !data){
          getDoc(doc(db,'podcasts',id))
          .then((docSnap) => {
               if(docSnap.exists()){
-                setTitle(docSnap.data().title)
-                setDescription(docSnap.data().description)
+                titleRef.current.value = docSnap.data().title
+                 console.log('title',titleRef.current.value)
+                descriptionRef.current.value = docSnap.data().description
                 setBannerImg(docSnap.data().bannerImage)
                 setDisplayImg(docSnap.data().displayImage)
               }
@@ -46,6 +54,8 @@ const CreatePodcastForm = () => {
    },[])
 
    async function handleSubmission(){
+    const title= titleRef.current.value;
+    const description = descriptionRef.current.value
     setLoading(true)
         if(!title || !description || !displayImg || !bannerImg ){
             toast.error('Please fill all the fields')
@@ -97,8 +107,8 @@ const CreatePodcastForm = () => {
                   await setDoc(doc(db,'podcasts',id),podcastData);
                   dispatch(setCurrPodcast(null))
                   setLoading(false)
-                  setTitle('');
-                  setDescription('');
+                  titleRef.current.value = '';
+                  descriptionRef.current.value = ''
                   setBannerImg(null);
                   setDisplayImg(null);
                   toast.success('Podcast edited successfully')
@@ -106,8 +116,8 @@ const CreatePodcastForm = () => {
                 }
                 else {
                   await addDoc(collection(db,'podcasts'),podcastData)
-                        setTitle('');
-                        setDescription('');
+                        titleRef.current.value = '';
+                  descriptionRef.current.value = ''
                         setBannerImg(null);
                         setDisplayImg(null);
                         setLoading(false)
@@ -124,8 +134,8 @@ const CreatePodcastForm = () => {
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <h1>{path === 'edit-podcast' ? 'Edit Podcast' : 'Create Podcast'}</h1>
-      <InputComponent type='text' placeholder='Podcast Title' value={title} setValue={setTitle}/>
-      <InputComponent type='text'placeholder='Podcast Description' value={description} setValue={setDescription}/>
+      <InputRef type='text' placeholder='Podcast Title' inputRef={titleRef}  />
+      <InputRef type='text'placeholder='Podcast Description' inputRef={descriptionRef} />
       <FileInput text='Import Banner Image' accept='image/*' id='banner-img' value={bannerImg} handleFile={setBannerImg} />
       <FileInput text='Import Display Image' accept='image/*' id='display-img' value={displayImg} handleFile={setDisplayImg}/>
       {

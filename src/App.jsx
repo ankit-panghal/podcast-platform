@@ -10,6 +10,7 @@ import PodcastsPage from './pages/PodcastsPage';
 import PodcastDetails from './pages/PodcastDetails';
 import CreateEpisodePage from './pages/CreateEpisodePage';
 import EditPodcastPage from './pages/EditPodcastPage';
+import 'react-loading-skeleton/dist/skeleton.css'
 
 function App() {
 
@@ -25,8 +26,8 @@ function App() {
           <Route path='/podcasts' element={<PodcastsPage/>}/>
           <Route path='/podcast/:id' element={<PodcastDetails/>}/>
           <Route path='/podcast/:id/create-episode' element={<CreateEpisodePage/>}/>
-          <Route path='/*' element={<h1 className='heading'>Page Not Found</h1>}/>
         </Route>
+          <Route path='/*' element={<h1 className='heading' style={{marginTop : '2rem'}}>Page Not Found...</h1>}/>
      </Routes>
     </div>
   );

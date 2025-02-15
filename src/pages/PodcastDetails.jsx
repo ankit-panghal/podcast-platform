@@ -71,8 +71,8 @@ function handleEpisodeCreation (){
             <div className='title-bar'>
             <h1>{podcast.title}</h1>
             <div style={{display: 'flex',gap : '10px'}}>
-            {podcast.createdBy === auth.currentUser.uid ?<button onClick= {handleEditPodcast}className='custom-btn'>Edit Podcast</button> : ''}
-           {podcast.createdBy === auth.currentUser.uid ? <button className='custom-btn' onClick={handleEpisodeCreation}>Create Episode</button> : '' }
+            {podcast.createdBy === auth.currentUser.uid  && <button onClick= {handleEditPodcast}className='custom-btn'>Edit Podcast</button> }
+           {podcast.createdBy === auth.currentUser.uid && <button className='custom-btn' onClick={handleEpisodeCreation}>Create Episode</button> }
            </div>
             </div>
             <div className='banner-bg'>

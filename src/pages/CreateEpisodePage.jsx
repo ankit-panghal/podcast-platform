@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Header from '../Components/Header'
-import InputComponent from '../Components/Input';
 import FileInput from '../Components/Input/FileInput';
 import { toast } from 'react-toastify';
 import {auth,db} from '../Firebase'
@@ -8,17 +7,21 @@ import cld from '../config';
 import { addDoc, collection } from 'firebase/firestore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Bars } from 'react-loader-spinner';
+import InputRef from '../Components/Input/InputRef';
 
 const CreateEpisodePage = () => {
     const {id} = useParams();
-    const [title,setTitle] = useState('');
-    const [description,setDescription] = useState('');
+    const titleRef = useRef('')
+    const descriptionRef = useRef('')
     const [audioFile,setAudioFile] = useState(null);
     const [loading,setLoading] = useState(false);
 
     const navigate = useNavigate();
 
     async function handleSubmission(){
+      const title = titleRef.current.value;
+      const description = descriptionRef.current.value;
+
        setLoading(true)
        if( !title || !description || !audioFile){
         toast.error('Please fill all the fields')
@@ -44,8 +47,8 @@ const CreateEpisodePage = () => {
             await addDoc(collection(db,'podcasts',id,'episodes'),episodeData)
             setLoading(false);
             toast.success('Episode created successfully')
-            setTitle('');
-            setDescription('');
+            titleRef.current.value = ''
+            descriptionRef.current.value = ''
             setAudioFile(null);
             navigate(`/podcast/${id}`)
         
@@ -62,8 +65,8 @@ const CreateEpisodePage = () => {
       <Header/>
       <form onSubmit={(e) => e.preventDefault()}>
        <h1>Create Episode</h1>
-       <InputComponent value={title} setValue={setTitle} placeholder='Title'/>
-       <InputComponent  value={description} setValue={setDescription} placeholder='Description'/>
+       <InputRef placeholder='Title' inputRef={titleRef}/>
+       <InputRef placeholder='Description' inputRef={descriptionRef}/>
        <FileInput text='Upload audio file' id='audio-file' accept='audio/*' handleFile={setAudioFile}/>
        <button className='custom-btn' onClick={handleSubmission}>
         {loading ? <Bars color='white' height='24'/> : 'Create Episode'}</button>

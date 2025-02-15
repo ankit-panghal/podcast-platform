@@ -1,14 +1,16 @@
-import React,{useState} from 'react'
-import InputComponent from '../Input'
+import React,{useRef, useState} from 'react'
 import ButtonComponent from '../Button';
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import { toast } from 'react-toastify';
+import InputComponent from '../Input';
+
 const LoginForm = () => {
-    const [email,setEmail] = useState('');
-    const [password,setPassword] = useState('');
+    const [email,setEmail] = useState('')
+    const [password,setPassword] = useState('')
+
     const auth = getAuth();
-    
-    const handleResetPassword = () => {
+  
+    const handleResetPassword = (email) => {
          try{
             if(email === '') throw new Error('Please Enter Email')
             else{
@@ -27,9 +29,10 @@ const LoginForm = () => {
   return (
     <>
       <InputComponent type='email' placeholder='Email' value={email} setValue={setEmail}/>
-      <InputComponent type='password' placeholder='Password' value={password} setValue={setPassword}/>
+      <InputComponent type='password' placeholder='Password'  value={password} setValue={setPassword}/>
       <ButtonComponent text='Login' email={email} password={password}/>
-      <p onClick={handleResetPassword}>Forgot Password/Change Password ?</p>
+      <p onClick={() => handleResetPassword(email)}>Forgot Password/Change Password ?</p>
+      
     </>
   )
 }

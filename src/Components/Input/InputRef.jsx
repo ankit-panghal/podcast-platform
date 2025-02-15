@@ -1,6 +1,7 @@
+import React from 'react'
 import './style.css'
 
-const InputComponent = ({type,placeholder,value,setValue,readOnly,display}) => {
+const InputRef = ({type,placeholder,inputRef,readOnly,display}) => {
 
    
   return (
@@ -8,13 +9,12 @@ const InputComponent = ({type,placeholder,value,setValue,readOnly,display}) => {
      className='custom-input'
        type={type}
        placeholder={placeholder}
-       value={value}
-        onChange={(e) => setValue(e.target.value)}
         readOnly={readOnly}
         style={{display : display}}
+        ref={inputRef}
     />
       
   )
 }
 
-export default InputComponent
+export default InputRef
